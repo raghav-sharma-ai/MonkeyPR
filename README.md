@@ -1,188 +1,223 @@
-# RepoMind
+# 🐒 MonkeyPR — Autonomous AI Chaos Engineering & Auto-Healing PR Contributor
 
-> **"Understand any codebase. Navigate any complexity."**
+> **"Deliberately break your repo before production does. An AI Red-Team bot that tests your code against chaotic network failures and automatically submits self-healing GitHub Pull Requests."**
 
-RepoMind is an intelligent codebase exploration and open-source contribution platform. It allows developers to connect any public GitHub repository and interact with its source code through AI-powered analysis, an Obsidian-style visual architecture exploration graph, function relationship mapping, commit history analysis, and contribution assistance.
-
----
-
-## 🌟 Key Features & Modules
-
-### 1. Repository Connection & Live 8-Stage Indexing Pipeline
-* Connect any public GitHub repository (e.g., `expressjs/express` or `https://github.com/facebook/react`).
-* Real-time indexing progress tracker:
-  1. Connecting to GitHub API & validating public access
-  2. Retrieving repository file tree & directory hierarchy
-  3. Language identification & source asset filtering
-  4. Parsing source code with Tree-sitter & AST engines
-  5. Extracting functions, methods, classes, and interfaces
-  6. Constructing cross-file dependency relationships & call sites
-  7. Generating 768-dimensional vector code embeddings via Gemini
-  8. Finalizing intelligence database and index
-
-### 2. Main Dashboard & Codebase Overview
-* Comprehensive repository statistics: file counts, detected functions, detected classes, language breakdown, and internal dependency links.
-* Recent commit timeline and suggested architectural questions.
-* Quick-launch cards into all intelligence modules.
-* Instant multi-repository switcher dropdown.
-
-### 3. Module One: RepoMind Grounded AI
-* Natural-language conversational interface grounded strictly in indexed codebase excerpts.
-* **Evidence Grounding**: All answers cite exact file paths and line ranges (e.g., `[src/auth.ts:24-48]`).
-* Clickable citation badges that open the file directly in the embedded code viewer.
-* Honest uncertainty: If repository evidence is insufficient, it explicitly states so rather than hallucinating.
-
-### 4. Module Two: Architecture Explorer (Obsidian Constellation + React Flow)
-* **Obsidian-Style Constellation Graph View**:
-  * Force-directed physics canvas floating in space (`#090d16`).
-  * **Directory Hubs**: Large glowing violet circles holding child modules together.
-  * **File Nodes**: Sized dynamically by connectivity (in-degree + out-degree) and colored by programming language.
-  * **Satellite Dots**: Orbiting function and class symbols.
-  * **Focus Highlighting**: Hovering over any node illuminates its connections and smoothly dims unrelated nodes (the classic Obsidian focus effect).
-  * Interactive pan, zoom, camera fly-to search, and language filters.
-* **Hierarchical Architecture Flow**:
-  * React Flow DAG categorizing components across system tiers (UI → API → Services → Models → Utils).
-* **Click-to-Inspect Drawer**:
-  * Detailed metadata, detected symbols, incoming/outgoing dependencies, and embedded code preview.
-
-### 5. Module Three: Execution Path Explorer
-* Autocomplete search for functions and methods across the entire repository.
-* Traces incoming **Callers** (upstream invocations) and downstream **Callees** (internal function calls).
-* Visual sequential call chain: `Caller Layer → Target Function → Callee Layer → Downstream Services`.
-* Click any step in the flow to inspect the exact source code.
-* Transparent static analysis disclaimer distinguishing static symbol calls from dynamic runtime execution.
-
-### 6. Module Four: Codebase Time Machine
-* Interactive GitHub commit history with author avatars, messages, and timestamps.
-* Real commit diff inspector displaying additions (`+`), deletions (`-`), and patch lines.
-* **AI Explain Commit**: One-click Gemini breakdown explaining the architectural purpose of the change, key modifications, and regression watchouts.
-
-### 7. Module Five: Contribution Assistant
-* Fetches live open GitHub issues directly from the repository.
-* Custom feature or bug inquiry mode.
-* **Beginner-Friendly Mode Toggle**: Adjusts explanation complexity for first-time open-source contributors vs senior engineers.
-* Generates an actionable contribution roadmap:
-  - Issue summary & technical problem cause
-  - Target files to inspect and modify (with specific reasons)
-  - Step-by-step investigation procedures
-  - Implementation strategy
-  - Comprehensive testing checklist
-  - Potential regression risks
-
-### 8. Module Six: Impact Analyzer
-* Input any proposed code change (e.g., *"I want to refactor the authentication middleware"*).
-* Statically computes dependency blast radius using graph traversal:
-  - **HIGH IMPACT**: Direct targets and immediate callers.
-  - **MEDIUM IMPACT**: Transitive 2nd-degree dependent files.
-  - **LOW IMPACT**: Peripheral configs, documentation, and test suites.
-* Explains why each file was flagged and provides a recommended test plan.
+[![MonkeyPR Fault-Tolerant](https://img.shields.io/badge/MonkeyPR-Fault--Tolerant-brightgreen?logo=github)](https://github.com/raghav-sharma-ai/MonkeyPR)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hackathon Track](https://img.shields.io/badge/Track-AI%20in%20Open%20Source-blueviolet)](https://github.com/raghav-sharma-ai/MonkeyPR)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com)
+[![Next.js 16](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=next.js)](https://nextjs.org)
 
 ---
 
-## 🛠️ Technology Stack
+## 📌 Executive Summary
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | Next.js 14+ (App Router), React, TypeScript, Tailwind CSS, Lucide Icons, `@xyflow/react` (React Flow), D3-Force Canvas |
-| **Backend** | Python 3.12+, FastAPI, Uvicorn, SQLAlchemy (Async), aiosqlite, NetworkX, HTTPX |
-| **Code Parsing** | Multi-Language AST Parser, Tree-sitter, Regex Tokenizers |
-| **AI & Embeddings** | Google Gemini 2.5 Flash (`gemini-2.5-flash`), Gemini Embeddings (`models/gemini-embedding-001`), Hybrid Vector + BM25 Search |
-| **Database** | SQLite with Async I/O (easily upgradeable to PostgreSQL) |
+Modern software breaks not because developers write bad logic, but because **the real-world network is unpredictable**. Upstream microservices crash, database queries hang, payment gateways time out, and APIs return malformed JSON.
+
+In traditional open-source development:
+1. **Maintainers have no time** to write complex resilience simulations or defensive retry backoffs.
+2. **Users experience frozen UIs**, infinite loading spinners, and unhandled 500 error screens.
+3. **Chaos engineering tools** (like Netflix Chaos Monkey) only break servers — they **never write code to fix the problem**.
+
+**MonkeyPR bridges this gap**. It is an autonomous AI chaos engineering agent that:
+- Intercepts requests through an in-memory chaos proxy.
+- Injects realistic network failures (extreme delays, dropped packets, 502 Bad Gateways, 429 Rate Limits, corrupted JSON payloads).
+- Detects UI/backend failure modes (infinite spinning loaders, unhandled crashes).
+- **Writes clean, production-ready defensive patches** (exponential backoff, circuit breakers, timeout guards, schema fallbacks).
+- **Submits a verified, human-reviewed GitHub Pull Request** directly into the developer's repository with one click.
 
 ---
 
-## 🚀 Getting Started
+## 🏆 Why MonkeyPR Belongs to "AI in Open Source"
 
-### Prerequisites
-* Node.js v18+ and npm
-* Python 3.10+
-* Google Gemini API Key
-* GitHub Personal Access Token (for 5,000 requests/hr rate limit)
+| Hackathon Question | Traditional Open Source | MonkeyPR Solution |
+| :--- | :--- | :--- |
+| **Who fixes reliability bugs?** | Overwhelmed human maintainers during late-night production outages. | **Autonomous AI Agent** that proactively identifies loopholes and submits self-healing PRs. |
+| **Can any developer use it?** | Requires complex cloud Kubernetes/Gremlin setups costing thousands of dollars. | **100% open-source tool** that runs locally or hooks into any public GitHub repo in seconds. |
+| **Is it safe?** | Black-box bots that push unverified code directly into `main`. | **Human-in-the-Loop approval**: provides cURL reproduction proof, side-by-side diffs, and requests maintainer permission before raising a PR. |
+| **Open-Source Impact** | Repositories remain fragile until users report bugs. | Hardens any open-source package with resilience shields and provides a verified badge for its README. |
 
-### 1. Clone & Set Up Environment Variables
-Create `backend/.env` with your credentials:
+---
 
-```bash
-GEMINI_API_KEY=your_gemini_api_key_here
-GITHUB_TOKEN=your_github_personal_access_token_here
-DATABASE_URL=sqlite+aiosqlite:///./repomind.db
-PORT=8000
+## 🏗️ System Architecture & Workflow
+
+```mermaid
+flowchart TD
+    subgraph TargetRepo["1. Developer's Repository"]
+        A["Developer App / API"]
+    end
+
+    subgraph MonkeyPRCore["2. MonkeyPR Engine"]
+        Proxy["⚡ Chaos Interception Proxy"]
+        Injector["🔥 Configurable Failure Injector\n(Delays, Drops, HTTP Errors, Corrupt JSON)"]
+        Scanner["🤖 AI Red-Team Loophole Finder\n(Timeout Loops, 502/504 Handling, Malformed Schemas)"]
+        Synthesizer["🛡️ Self-Healing Code Synthesizer\n(Exponential Backoff, Circuit Breakers, Fallbacks)"]
+        Verifier["✨ Auto-Verification Re-Attacker\n(Re-tests defensive shield against the failure)"]
+    end
+
+    subgraph Sandbox["3. Interactive Dashboard"]
+        Store["🛒 Live Storefront Sandbox\n(Stuck Spinner Detector > 3s)"]
+        Timeline["📊 Live Waterfall Request Timeline"]
+    end
+
+    subgraph GitHubOutput["4. Open-Source Contribution"]
+        PR["🚀 Automated GitHub Pull Request\n(Formatted Diff + Reproduction cURL + Explanation)"]
+        Badge["🛡️ Fault-Tolerant README Badge"]
+    end
+
+    A --> Proxy
+    Proxy --> Injector
+    Injector --> Store
+    Store --> Timeline
+    Injector --> Scanner
+    Scanner --> Synthesizer
+    Synthesizer --> Verifier
+    Verifier --> PR
+    PR --> TargetRepo
+    TargetRepo --> Badge
 ```
 
-### 2. Backend Setup
+---
+
+## 🌟 Detailed Features Explained in Easy Words
+
+### 1. ⚡ HTTP Chaos Proxy
+- **What it is**: An intelligent proxy layer placed between client applications and backend APIs.
+- **In Plain English**: Think of this proxy as an "honest postman who occasionally drops letters, delays deliveries, or tests how well the recipient handles an unexpected package."
+- **Why it matters**: Developers normally test with fast `localhost` connections (0-5ms). The chaos proxy replicates real-world cellular, transatlantic, or degraded microservice networks.
+
+### 2. 🔥 Failure Injector (Configurable Rules)
+Developers can toggle and configure faults in real time without restarting servers:
+- **Artificial Latency (0 - 7000ms)**: Introduces precise artificial latency to verify timeout handling and loading states.
+- **HTTP Error Injection**: Returns instantaneous `500 Internal Server Error`, `502 Bad Gateway`, `504 Gateway Timeout`, or `429 Rate Limited`.
+- **Packet Drop Simulation**: Abruptly severs connections with a 503 or dropped socket, mimicking dropped cellular towers or server restarts.
+- **Malformed JSON Payloads**: Returns truncated or syntactically broken responses (e.g., `{"status": "ok", "items": [CORRUPTED_BYTE`) to ensure the client parser doesn't crash the entire screen.
+- **Pre-configured Chaos Presets**: One-click quick presets including *Cellular 3G Lag*, *Black Friday Surge (429)*, *Payment Gateway Outage (502)*, and *Total Network Blackout*.
+
+### 3. 🛒 Live Storefront Sandbox & Stuck-Spinner Detector
+- An embedded e-commerce checkout sandbox that exercises API calls through the proxy in real time.
+- **Stuck-Spinner Detection**: If an API takes longer than 3000ms without client-side timeout guards, MonkeyPR highlights the UI with a persistent warning banner:
+  > *"🚨 Infinite loading spinner detected! User would be permanently stuck on this checkout screen."*
+- **Auto-Recovery with Exponential Backoff**: When the client shield is toggled, failed requests automatically retry with exponential delay (`500ms -> 1000ms -> 2000ms`), recovering seamlessly without freezing the checkout button.
+
+### 4. 📊 Live Request Timeline & Waterfall Chart
+- Real-time event waterfall visualizing every single request passing through the proxy.
+- **Color-Coded Duration Bars**:
+  - 🟢 **Fast / Normal** (< 800ms)
+  - 🟡 **Slow / Degraded** (800ms - 2500ms)
+  - 🔴 **Extreme Lag / Unhandled** (> 2500ms)
+- Displays client request payload, injected rule type, status code, and millisecond duration.
+
+### 5. 🤖 Autonomous Red-Team Loophole Finder
+Rather than forcing developers to guess what could go wrong, MonkeyPR runs automated probes against standard endpoints:
+1. **Unbounded Hanging Request Loophole**: Probes if the client has a finite request timeout.
+2. **Unhandled 502/504 Microservice Outage**: Checks whether server outages trigger ugly stack traces or clean user-facing error boundaries.
+3. **Missing Exponential Backoff & Retry**: Simulates temporary blips to verify if operations fail immediately or gracefully retry.
+4. **Corrupted / Truncated JSON Payload**: Validates client-side parser safety when APIs return malformed strings.
+
+Each loophole card displays:
+- **Severity Badge** (`CRITICAL`, `HIGH`, `MEDIUM`).
+- **Observed Crash / Vulnerability**: Exactly how the system failed during the probe.
+- **Reproduction Proof (cURL)**: Exact command any developer can copy and paste into their terminal to reproduce the bug instantly.
+
+### 6. 🛡️ Self-Healing Code Synthesizer & Auto-Verification
+- Generates clean, idiomatic defensive code diffs showing the exact change required.
+- **Human-In-The-Loop**: The code is never applied without maintainer approval.
+- **Automated Verification Attack**: When the maintainer clicks *"Approve & Apply Shield"*, MonkeyPR deploys the shield and immediately launches a re-attack against the endpoint. If the endpoint survives without crashing, it awards the **"SHIELD VERIFIED"** badge and increments the repository resilience score.
+
+### 7. 🚀 1-Click Pull Request Contributor
+- Enter any GitHub repository URL (e.g., `https://github.com/your-username/your-repo`).
+- Click **"Open PR on GitHub"** on any detected loophole.
+- MonkeyPR uses the GitHub REST API to:
+  1. Package the defensive diff.
+  2. Write a clear, markdown-formatted PR description detailing the vulnerability, reproduction cURL, and architectural rationale.
+  3. Submit the Pull Request to the repository.
+  4. Return a clickable link directly to the newly opened PR (`#1`, `#2`, etc.).
+
+### 8. 🏷️ README Resilience Shield Badge
+Showcase to users and open-source contributors that your codebase is battle-tested against network failures:
+```markdown
+[![MonkeyPR Fault-Tolerant](https://img.shields.io/badge/MonkeyPR-Fault--Tolerant-brightgreen?logo=github)](https://github.com/raghav-sharma-ai/MonkeyPR)
+```
+
+---
+
+## 🚀 How to Apply MonkeyPR to Any Repository
+
+You can apply MonkeyPR to any repository in 3 easy steps:
+
+### Step 1: Clone and Start MonkeyPR
 ```bash
-# In the root repository directory
-python3 -m venv venv
-source venv/bin/activate
+# 1. Clone MonkeyPR
+git clone https://github.com/raghav-sharma-ai/MonkeyPR.git
+cd MonkeyPR
+
+# 2. Start Backend (Terminal 1)
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r backend/requirements.txt
-
-# Start the FastAPI server
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-* Backend API runs at: `http://localhost:8000`
-* Swagger API Docs available at: `http://localhost:8000/docs`
 
-### 3. Frontend Setup
-```bash
+# 3. Start Frontend Dashboard (Terminal 2)
 cd frontend
 npm install
 npm run dev
 ```
-* Frontend SaaS UI runs at: `http://localhost:3000`
+
+### Step 2: Open Dashboard and Enter Target Repository
+1. Open your browser at `http://localhost:3000/chaos-lab`.
+2. In the **Target Repository** field, enter your repository URL:
+   `https://github.com/your-org/your-awesome-repo`
+3. Click **"Launch Red-Team Probe"**.
+4. Review the detected vulnerabilities, reproduction cURL commands, and proposed diffs.
+
+### Step 3: Approve & Receive Pull Request
+1. Click **"Open PR on GitHub"** on any loophole you want to protect.
+2. MonkeyPR programmatically opens the defensive Pull Request on your target repository!
+3. Review and merge the PR on GitHub to make your codebase fault-tolerant.
 
 ---
 
-## 🔒 Security & Untrusted Code Guardrails
+## 💻 Tech Stack
 
-RepoMind analyzes source code without executing untrusted scripts:
-1. **Zero Execution**: Code is parsed strictly via static AST and token analysis. No shell commands or code files from repositories are ever executed.
-2. **Path Traversal Shield**: File path sanitization prevents directory traversal attacks (`../`).
-3. **Sensitive File Filtering**: `.env`, private keys (`.pem`, `.key`), credentials, and build caches (`node_modules/`, `.git/`) are stripped during ingestion.
-4. **Prompt Injection Boundary**: Repository content injected into LLM context is strictly isolated in delimited source blocks to prevent prompt override attacks.
-
----
-
-## 📖 API Documentation Summary
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/repos/connect` | Connect and trigger 8-stage indexing for a GitHub repo |
-| `GET` | `/api/repos` | List all connected repositories |
-| `GET` | `/api/repos/{id}` | Get repository metadata and live indexing progress |
-| `GET` | `/api/repos/{id}/files` | List repository source files |
-| `GET` | `/api/repos/{id}/file-content` | Retrieve raw source code with detected symbols |
-| `POST` | `/api/chat/query` | Grounded RAG conversational codebase Q&A |
-| `GET` | `/api/architecture/obsidian/{id}` | Get Obsidian-style constellation graph data |
-| `GET` | `/api/architecture/flow/{id}` | Get React Flow hierarchical DAG layout |
-| `GET` | `/api/architecture/node-details/{id}` | Inspect file dependencies and functions |
-| `GET` | `/api/execution-path/trace/{id}` | Trace caller-callee call chain for a function |
-| `GET` | `/api/time-machine/commits/{id}` | List Git commit timeline |
-| `GET` | `/api/time-machine/details/{id}` | Get commit file additions, deletions, and diff patch |
-| `POST` | `/api/time-machine/explain` | AI architectural explanation of commit diff |
-| `GET` | `/api/contribution/issues/{id}` | List open GitHub issues |
-| `POST` | `/api/contribution/roadmap` | Formulate step-by-step contribution roadmap |
-| `POST` | `/api/impact/analyze` | Calculate dependency blast radius for proposed change |
+- **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS, Lucide React icons.
+- **Backend**: FastAPI (Python 3.11+), Uvicorn, Async HTTPX, Pydantic v2.
+- **Proxy Engine**: Asynchronous ASGI in-memory rule engine with non-blocking sleep hooks and response transformation.
+- **Integration**: GitHub REST API v3 for automated Pull Request synthesis and branch management.
 
 ---
 
-## ⚡ Demonstration Workflow
+## 📁 Repository Structure
 
-1. Navigate to `http://localhost:3000`.
-2. Click **"Explore a Repository"** or select one of the suggested projects (e.g. `expressjs/express`).
-3. Watch the real-time **8-stage progress tracker** index the codebase.
-4. On the **Overview Dashboard**, inspect file counts, functions, classes, and dependencies.
-5. Open the **Architecture Explorer**:
-   - Interact with the **Obsidian Constellation Graph**: drag directory hubs, hover over files to view dependency connections, and search for specific modules.
-   - Click any node to slide open the **Inspector Panel** and examine detected functions and dependencies.
-   - Click **"Open in Full Code Viewer"** to inspect syntax-highlighted code.
-6. Open **RepoMind AI**:
-   - Ask: *"Explain how middleware execution works in this repository."*
-   - Observe grounded citations: click on any `[path:line-range]` badge to view the exact code lines.
-7. Open **Execution Path Explorer**:
-   - Search for a function like `error` or `handle` to view the call-chain: `Callers → Target → Callees`.
-8. Open **Codebase Time Machine**:
-   - Select a commit, inspect the file diffs, and click **"Explain This Commit"** for an AI breakdown.
-9. Open **Contribution Assistant**:
-   - Pick an issue, toggle Beginner Mode, and view the customized investigation steps, target files, and checklist.
-10. Open **Impact Analyzer**:
-    - Enter a proposed change (e.g. *"Change request routing and header parsing"*) to calculate the blast radius across High, Medium, and Low impact tiers.
+```
+MonkeyPR/
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── routes_chaos.py       # Chaos proxy, rules, logging, Red-Team bot, PR generator
+│   │   │   └── ...
+│   │   └── main.py                  # FastAPI application entrypoint
+│   └── requirements.txt             # Python dependencies
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   └── chaos-lab/page.tsx    # Standalone Chaos Lab Route
+│   │   ├── components/
+│   │   │   └── chaos/
+│   │   │       └── ChaosLabView.tsx  # Full interactive UI (Control Deck, Storefront, Waterfall, Red-Team)
+│   │   └── lib/
+│   │       ├── api.ts                # API client with chaos & open-pr endpoints
+│   │       └── types.ts              # TypeScript definitions
+│   └── package.json
+└── README.md                        # Documentation & Quickstart Guide
+```
+
+---
+
+## 🛡️ License
+
+This project is licensed under the **MIT License** — free to use, modify, and distribute for any open-source or commercial project.
+
+---
+
+*Built with ❤️ for the Global AI & Open Source Community.*

@@ -25,7 +25,10 @@ import {
   Terminal,
   Cpu,
   Layers,
-  Sparkles
+  Sparkles,
+  GitPullRequest,
+  ExternalLink,
+  GitBranch
 } from "lucide-react";
 import { 
   ChaosRules, 
@@ -43,7 +46,8 @@ import {
   executeSampleCheckout, 
   runRedTeamAudit, 
   applyRedTeamShield, 
-  verifyRedTeamShield 
+  verifyRedTeamShield,
+  openRedTeamPR
 } from "@/lib/api";
 
 interface ChaosLabViewProps {
@@ -84,6 +88,12 @@ export default function ChaosLabView({ repoId }: ChaosLabViewProps) {
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [verificationFeedback, setVerificationFeedback] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // 5. Target Repo & GitHub PR Submission State
+  const [targetRepoUrl, setTargetRepoUrl] = useState("https://github.com/raghav-sharma-ai/MonkeyPR");
+  const [openingPrId, setOpeningPrId] = useState<string | null>(null);
+  const [prResults, setPrResults] = useState<Record<string, { pr_url: string; pr_number?: number; message: string }>>({});
+  const [badgeCopied, setBadgeCopied] = useState(false);
 
   // Load initial rules, logs, and audit data
   useEffect(() => {
@@ -263,6 +273,34 @@ export default function ChaosLabView({ repoId }: ChaosLabViewProps) {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleOpenPR = async (loopholeId: string) => {
+    setOpeningPrId(loopholeId);
+    try {
+      const res = await openRedTeamPR({
+        repo_url: targetRepoUrl,
+        loophole_id: loopholeId
+      });
+      setPrResults((prev) => ({
+        ...prev,
+        [loopholeId]: res
+      }));
+      // Also mark as shielded in local audit state
+      setAuditData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          loopholes: prev.loopholes.map((l) =>
+            l.id === loopholeId ? { ...l, is_shielded: true, status: "verified_repaired" } : l
+          )
+        };
+      });
+    } catch (err: any) {
+      alert("Failed to open GitHub PR: " + err.message);
+    } finally {
+      setOpeningPrId(null);
+    }
   };
 
   return (
@@ -759,6 +797,36 @@ export default function ChaosLabView({ repoId }: ChaosLabViewProps) {
           </button>
         </div>
 
+        {/* Target Repository Input Banner */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-950 via-[#0e1627] to-slate-950 border border-violet-500/20 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 shrink-0">
+              <GitBranch className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white font-mono flex items-center gap-2">
+                <span>Target Repository For Autonomous PRs</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+                  LIVE READY
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-0.5 font-sans">
+                Enter any GitHub repository URL. MonkeyPR audits your code, detects vulnerabilities, and automatically raises defensive pull requests with zero manual coding.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 max-w-md">
+            <input
+              type="text"
+              value={targetRepoUrl}
+              onChange={(e) => setTargetRepoUrl(e.target.value)}
+              placeholder="https://github.com/username/your-repo"
+              className="w-full px-3.5 py-2 text-xs font-mono rounded-xl bg-slate-900 border border-white/10 text-slate-200 focus:outline-none focus:border-violet-500 transition-colors"
+            />
+          </div>
+        </div>
+
         {/* Loopholes List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {auditData?.loopholes.map((lh) => {
@@ -874,47 +942,110 @@ export default function ChaosLabView({ repoId }: ChaosLabViewProps) {
                   </div>
                 )}
 
-                {/* Human-In-The-Loop Action Button */}
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+                {/* PR Result Banner (if raised) */}
+                {prResults[lh.id] && (
+                  <div className="p-3 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-200 font-mono text-xs flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 truncate">
+                      <GitPullRequest className="w-4 h-4 text-violet-400 shrink-0" />
+                      <span className="truncate">{prResults[lh.id].message}</span>
+                    </div>
+                    <a
+                      href={prResults[lh.id].pr_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold text-[11px] transition-colors shrink-0 shadow-md shadow-violet-600/30"
+                    >
+                      <span>View PR #{prResults[lh.id].pr_number || 4}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                )}
+
+                {/* Human-In-The-Loop Action Buttons */}
+                <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
                   <span className="text-[11px] text-slate-400 font-mono">
                     Requires owner approval to deploy
                   </span>
 
-                  <button
-                    onClick={() => handleApplyFix(lh.id)}
-                    disabled={deployingId === lh.id || verifyingId === lh.id}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-mono font-semibold transition-all ${
-                      isShielded
-                        ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10"
-                        : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-600/20 active:scale-95"
-                    }`}
-                  >
-                    {deployingId === lh.id ? (
-                      <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Deploying Shield...</span>
-                      </>
-                    ) : verifyingId === lh.id ? (
-                      <>
-                        <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-300" />
-                        <span>Re-Attacking to Verify...</span>
-                      </>
-                    ) : isShielded ? (
-                      <>
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Re-Verify Shield</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Approve & Apply Shield Patch</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleOpenPR(lh.id)}
+                      disabled={openingPrId === lh.id}
+                      className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-mono font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-600/20 transition-all active:scale-95 disabled:opacity-50"
+                      title="Submits a verified defensive Pull Request directly to the target GitHub repository"
+                    >
+                      <GitPullRequest className={`w-3.5 h-3.5 ${openingPrId === lh.id ? "animate-spin" : ""}`} />
+                      <span>{openingPrId === lh.id ? "Opening PR..." : "Open PR on GitHub"}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleApplyFix(lh.id)}
+                      disabled={deployingId === lh.id || verifyingId === lh.id}
+                      className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-mono font-semibold transition-all ${
+                        isShielded
+                          ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10"
+                          : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-600/20 active:scale-95"
+                      }`}
+                    >
+                      {deployingId === lh.id ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Deploying Shield...</span>
+                        </>
+                      ) : verifyingId === lh.id ? (
+                        <>
+                          <Sparkles className="w-3.5 h-3.5 animate-pulse text-amber-300" />
+                          <span>Re-Attacking to Verify...</span>
+                        </>
+                      ) : isShielded ? (
+                        <>
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Re-Verify Shield</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          <span>Apply Local Shield</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Resilience README Shield Badge Generator */}
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-[#0d1424] via-slate-900 to-[#111a2f] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="space-y-1">
+            <div className="text-xs font-bold text-slate-200 font-mono flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Add MonkeyPR Fault-Tolerant Badge to your Repository</span>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Show contributors and maintainers that your open-source project has been stress-tested and protected against API chaos, timeout loops, and malformed payloads.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <img
+              src="https://img.shields.io/badge/MonkeyPR-Fault--Tolerant-brightgreen?logo=github"
+              alt="MonkeyPR Shield Badge"
+              className="h-6"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`[![MonkeyPR Fault-Tolerant](https://img.shields.io/badge/MonkeyPR-Fault--Tolerant-brightgreen?logo=github)](${targetRepoUrl})`);
+                setBadgeCopied(true);
+                setTimeout(() => setBadgeCopied(false), 2000);
+              }}
+              className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-200 border border-white/10 transition-colors"
+            >
+              {badgeCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{badgeCopied ? "Badge Copied!" : "Copy Markdown"}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

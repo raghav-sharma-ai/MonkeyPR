@@ -314,3 +314,17 @@ export async function verifyRedTeamShield(loopholeId: string): Promise<{ verifie
   if (!res.ok) throw new Error("Failed to verify shield");
   return res.json();
 }
+
+export async function openRedTeamPR(payload: {
+  repo_url: string;
+  loophole_id: string;
+  github_token?: string;
+}): Promise<{ success: boolean; pr_url: string; pr_number?: number; message: string }> {
+  const res = await fetch(`${API_BASE}/chaos/redteam/open-pr`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error("Failed to open GitHub Pull Request");
+  return res.json();
+}
