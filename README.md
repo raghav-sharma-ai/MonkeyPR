@@ -146,21 +146,25 @@ Showcase to users and open-source contributors that your codebase is battle-test
 
 You can apply MonkeyPR to any repository in 3 easy steps:
 
-### Step 1: Clone and Start MonkeyPR
-```bash
-# 1. Clone MonkeyPR
-git clone https://github.com/raghav-sharma-ai/MonkeyPR.git
-cd MonkeyPR
+### Step 1: Start MonkeyPR
 
-# 2. Start Backend (Terminal 1)
-python3 -m venv .venv
+#### Option A: One-Command Runner (Recommended)
+```bash
+# Navigate to the project directory and run the launcher:
+cd Documents/RepoMind
+./start.sh
+```
+This automatically boots both the FastAPI backend (port 8000) and the Next.js frontend (port 3000), checks port availability, and displays live URLs.
+
+#### Option B: Manual Two-Terminal Runner
+```bash
+# Terminal 1: Backend (FastAPI)
+cd Documents/RepoMind
 source .venv/bin/activate
-pip install -r backend/requirements.txt
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
-# 3. Start Frontend Dashboard (Terminal 2)
-cd frontend
-npm install
+# Terminal 2: Frontend (Next.js)
+cd Documents/RepoMind/frontend
 npm run dev
 ```
 
